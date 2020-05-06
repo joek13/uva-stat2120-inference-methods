@@ -63,7 +63,7 @@ If you want to perform inference on the proportion of just one population, a [on
 If you want to perform inference about the proportions of a non-binary categorical variable, a [chi-square test of association](chi2.html) is appropriate.
 
 ## Considerations
-A one-sample z-test for proportions conducted at confidence level $\alpha$ will reject the null hypothesis if and only if the value corresponding to the null hypothesis, $0$, is completely outside of the $C = 1-\alpha$ confidence interval for the true difference between $p_1$ and $p_2$.
+A two-sample z-test for proportions conducted at confidence level $\alpha$ will reject the null hypothesis if and only if the value corresponding to the null hypothesis, $0$, is completely outside of the $C = 1-\alpha$ confidence interval for the true difference between $p_1$ and $p_2$.
 
 Neither the z-test nor the confidence interval use the standard deviation of the difference sample proportion, $\sigma_{\hat{p}_1 - \hat{p}_2}$.
 
