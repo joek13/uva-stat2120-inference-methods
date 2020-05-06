@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Two-sample t-test for means</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Two-sample t-test for means</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We have two independent (i.e., disjoint) populations. We want to determine whether there is a statistically significant difference between the means of each population. We don’t know with certainty the standard deviation of one or both populations, <span class="math inline">\(\sigma_1\)</span> and <span class="math inline">\(\sigma_2\)</span>, so we estimate them using the sample standard deviations, <span class="math inline">\(s_1\)</span> and <span class="math inline">\(s_2\)</span>. We have a sample of size <span class="math inline">\(n_1\)</span> from population 1, and a sample of size <span class="math inline">\(n_2\)</span> from popluation 2. Population 1 yields sample mean <span class="math inline">\(\bar{x}_1\)</span>, and population 2 yields sample mean <span class="math inline">\(\bar{x}_2\)</span>.</p>
+<h2 id="preconditions">Preconditions</h2>
+<p>To apply a two-sample t-test for means, one should verify the following conditions:</p>
+<ol class="incremental" type="1">
+<li>If <span class="math inline">\(n_1 + n_2 &lt; 15\)</span>, it is critical that the populations are normally distributed.</li>
+<li>If <span class="math inline">\(n_1 + n_2 \ge 15\)</span>, one may proceed in the absence of outliers or strong skewness.</li>
+<li>If <span class="math inline">\(n_1 + n_2 \ge 40\)</span>, procedures are generally robust.</li>
+</ol>
+<p>One can enhance robustness by planning <span class="math inline">\(n_1 \approx n_2\)</span>.</p>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> <span class="math inline">\(\mu_1 - \mu_2 = 0\)</span> (i.e., there is no difference between the two populations.)</p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> <span class="math inline">\(\mu_1 - \mu_2 \ne/&gt;/&lt; 0\)</span> (i.e., there is a difference between the two populations.)</p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    t = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>Where T is distributed according to the <span class="math inline">\(t(\text{min}(n_1-1, n_2-1))\)</span> distribution <em>(conservative approach)</em>,</p>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &lt; 0\)</span>: <span class="math inline">\(p = P(T \le t)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &gt; 0\)</span>: <span class="math inline">\(p = P(T \ge t)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 \ne 0\)</span>: <span class="math inline">\(p = 2P(T \le -|t|)\)</span></li>
+</ol>
+<h3 id="conservative-approach">Conservative approach</h3>
+<p>By choosing the smaller of <span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span> as the basis for our degrees of freedom, we take a <em>conservative approach</em>. As a result, our p-values are slightly larger than the true p-value.</p>
+<h2 id="p-value-python">p-value (Python)</h2>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &lt; 0\)</span>: <code>p = stats.t.cdf(t, df=min(n1-1,n2-1))</code></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &gt; 0\)</span>: <code>p = 1 - stats.t.cdf(t, df=min(n1-1,n2-1))</code></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 \ne 0\)</span>: <code>p = 2 * stats.t.cdf(-abs(t), df=min(n1-1,n2-1))</code></li>
+</ol>
+<h2 id="associated-confidence-interval">Associated confidence interval</h2>
+<p><span class="math display">\[
+\text{C% confidence interval} = (\bar{x}_1 - \bar{x}_2) \pm t^\star \sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}\\
+\text{choose } t^\star \text{ s.t. area on }t(\text{min}(n_1-1,n_2-1))\text{ distribution from }(-t^\star,t^\star)\text{ = C}
+\]</span></p>
+<p>Because we employ a <em>conservative approach</em>, this confidence interval will be slightly wider than the true confidence interval.</p>
+<h2 id="related-tests">Related tests</h2>
+<p>If you want to perform inference on the mean of a single population, a <a href="ttest.html">one-sample t-test for means</a> is more appropriate.</p>
+<p>If you have access to both of the population standard deviation values, a <a href="twoztest.html">two-sample z-test for means</a> is more appropriate.</p>
+<h2 id="considerations">Considerations</h2>
+<p>A two-sample t-test conducted at confidence level <span class="math inline">\(\alpha\)</span> will reject the null hypothesis if and only if the value corresponding to the null hypothesis, <span class="math inline">\(0\)</span>, is completely outside of the <span class="math inline">\(C = 1-\alpha\)</span> t-confidence interval for the true difference between means.</p>
+</body>
+</html>

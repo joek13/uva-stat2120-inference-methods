@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Two-sample z-test for means</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Two-sample z-test for means</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We have two independent (i.e., disjoint) populations. We want to determine whether there is a statistically significant difference between the means of each population. We know with certainty the standard deviation of each population, <span class="math inline">\(\sigma_1\)</span> and <span class="math inline">\(\sigma_2\)</span>. We have a sample of size <span class="math inline">\(n_1\)</span> from population 1, and a sample of size <span class="math inline">\(n_2\)</span> from popluation 2. Population 1 yields sample mean <span class="math inline">\(\bar{x}_1\)</span>, and population 2 yields sample mean <span class="math inline">\(\bar{x}_2\)</span>.</p>
+<h2 id="preconditions">Preconditions</h2>
+<p>To apply a two-sample z-test, one should verify that sample means are approximately normally distributed. This is the case if either of the following conditions holds:</p>
+<ol class="incremental" type="1">
+<li>The population is normally distributed.</li>
+<li>The sample size is large enough such that the Central Limit Theorem takes effect.</li>
+</ol>
+<p>One can enhance robustness by planning <span class="math inline">\(n_1 \approx n_2\)</span>.</p>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> <span class="math inline">\(\mu_1 - \mu_2 = 0\)</span> (i.e., there is no difference between the two populations.)</p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> <span class="math inline">\(\mu_1 - \mu_2 \ne/&gt;/&lt; 0\)</span> (i.e., there is a difference between the two populations.)</p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    z = \frac{(\bar{x}_1 - \bar{x}_2) - (\mu_1 - \mu_2)}{\sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>Where Z is a standard normal random variable,</p>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &lt; 0\)</span>: <span class="math inline">\(p = P(Z \le z)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &gt; 0\)</span>: <span class="math inline">\(p = P(Z \ge z)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 \ne 0\)</span>: <span class="math inline">\(p = 2P(Z \le -|z|)\)</span></li>
+</ol>
+<h2 id="p-value-python">p-value (Python)</h2>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &lt; 0\)</span>: <code>p = stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 &gt; 0\)</span>: <code>p = 1 - stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : \mu_1 - \mu_2 \ne 0\)</span>: <code>p = 2 * stats.norm.cdf(-abs(z))</code></li>
+</ol>
+<h2 id="associated-confidence-interval">Associated confidence interval</h2>
+<p><span class="math display">\[
+\text{C% confidence interval} = \bar{x}_1 - \bar{x}_2 \pm z^\star \sqrt{\frac{\sigma_1^2}{n_1} + \frac{\sigma_2^2}{n_2}}\\
+\text{choose } z^\star \text{ s.t. area on standard normal distribution from }(-z^\star,z^\star)\text{ = C}
+\]</span></p>
+<h2 id="related-tests">Related tests</h2>
+<p>If you want to perform inference on the mean of a single population, a <a href="ztest.html">one-sample z-test for means</a> is more appropriate.</p>
+<p>If you don’t have access to one or both of the population standard deviation values, a <a href="twottest.html">two-sample t-test for means</a> is more appropriate.</p>
+<h2 id="considerations">Considerations</h2>
+<p>A two-sample z-test conducted at confidence level <span class="math inline">\(\alpha\)</span> will reject the null hypothesis if and only if the value corresponding to the null hypothesis, <span class="math inline">\(0\)</span>, is completely outside of the <span class="math inline">\(C = 1-\alpha\)</span> confidence interval for the true difference between means.</p>
+</body>
+</html>

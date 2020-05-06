@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>ANOVA F-test for SLR model usefulness</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">ANOVA F-test for SLR model usefulness</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We have a single simple linear regression model (SLR) and want to assess its usefulness. Does the model provide useful predictions about our variable of interest?</p>
+<p>The population regression line is defined by <span class="math inline">\(\mu_y = \beta_0 + \beta_1x\)</span>, and the least-squares regression line is <span class="math inline">\(\hat{y} = b_0 + b_1x\)</span>.</p>
+<p>The ANOVA approach uses the following quantities to assess how much of the data’s variation is explained by our model.</p>
+<p><span class="math display">\[
+    \begin{split}
+    \text{Total SS (SST)}&amp;=\sum{(y_i-\bar{y})^2}\qquad&amp;\text{df}=n-1 \\
+                                                                                        \\
+    \text{Regression SS (SSR)}&amp;=\sum{(\hat{y}_i - \bar{y})^2} &amp;\text{df}=1 \\
+                                                                                                                                                 \\
+    \text{Residual SS (SSE)}&amp;=\sum{(y_i - \hat{y}_i)^2} &amp;\text{df}=n-2 \\
+                                                                                                                                         \\
+    \textbf{Note: } \text{SST} &amp;= \text{SSR} + \text{SSE}
+    \end{split}
+\]</span></p>
+<p>Using these values, we can readily compute the <em>coefficient of determination</em>, <span class="math inline">\(r^2\)</span>.</p>
+<p><span class="math display">\[
+    r^2 = \frac{\text{SSR}}{\text{SST}}
+\]</span></p>
+<p>Finally, we compute the <em>mean squares</em> values before we can calculate the test statistic.</p>
+<p><span class="math display">\[
+    \begin{split}
+    \text{Total MS (MST)}&amp;=\frac{\text{SST}}{\text{df}_\text{SST}} &amp;= \frac{\text{SST}}{n-1}\\
+                                                                                        \\
+    \text{Regression MS (MSR)}&amp;=\frac{\text{SSR}}{\text{df}_\text{SSR}} &amp;= \frac{\text{SSR}}{1}\\
+                                                                                        \\
+    \text{Residual MS (MSE)}&amp;=\frac{\text{SSE}}{\text{df}_\text{SSE}} &amp;= \frac{\text{SSE}}{n-2}\\
+                                                                                        \\
+    \end{split} \\
+    \textbf{Note: } \text{In general, SST} \ne \text{SSR} + \text{SSE} \text{ (mean squares are not additive)}
+\]</span></p>
+<h2 id="preconditions">Preconditions</h2>
+<p>For an ANOVA F-test to be valid, we should verify that we already meet the preconditions for the validity of SLR. (If SLR is inappropriate, an F test on your model would be pointless.)</p>
+<p>In our case, this means that we should verify that residuals are scattered randomly around zero with uniform variation. This satisfies the <em>linearity</em>, <em>independence</em>, and <em>constant variance</em> assumptions that underpin SLR.</p>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> the model is not useful (<span class="math inline">\(\beta_1 = 0\)</span>)</p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> the model is useful (<span class="math inline">\(\beta_1 \ne 0\)</span>)</p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    F = \frac{\text{MSR}}{\text{MSE}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>We compute our p value as follows, where <span class="math inline">\(F(k_1, k_2)\)</span> indicates a random variable distributed according to the <span class="math inline">\(F(k_1, k_2)\)</span> distribution. <span class="math display">\[
+    p = P(F(k_1, k_2) \ge F)\text{, where } k_1 = 1 \text{ and } k_2 = n-2
+\]</span></p>
+<h2 id="p-value-python">p-value (Python)</h2>
+<pre><code>p = 1 - stats.f.cdf(F, 1, n-2)</code></pre>
+</body>
+</html>

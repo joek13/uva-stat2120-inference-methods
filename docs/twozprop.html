@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Two-sample z-test for proportions</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Two-sample z-test for proportions</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We have two binary categorical variables. One identifies membership in one of two independent (i.e., disjoint) populations. The other represents our variable of interest. We want to perform inference on the true proportion of each population that falls into one value of the variable of interest (e.g., “yes” on a survey). Our true proportions for popuplation 1 and 2 are denoted by <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span>, respectively.</p>
+<p>We draw a sample of size <span class="math inline">\(n_1\)</span> from population 1, yielding <span class="math inline">\(X_1\)</span> successes. Let <span class="math inline">\(\hat{p}_1 = \frac{X_1}{n_1}\)</span>. <span class="math inline">\(\hat{p}_1\)</span> is an <em>unbiased estimator</em> of <span class="math inline">\(p_1\)</span>.</p>
+<p>We draw a sample of size <span class="math inline">\(n_2\)</span> from population 2, yielding <span class="math inline">\(X_2\)</span> successes. Let <span class="math inline">\(\hat{p}_2 = \frac{X_2}{n_2}\)</span>. <span class="math inline">\(\hat{p}_2\)</span> is an <em>unbiased estimator</em> of <span class="math inline">\(p_2\)</span>.</p>
+<h2 id="preconditions">Preconditions</h2>
+<h3 id="preconditions-for-hypothesis-testing">Preconditions for hypothesis testing</h3>
+<p>For the normal approximation used in this test to be valid, <span class="math inline">\(n_1\)</span> and <span class="math inline">\(n_2\)</span> should be large enough such that:</p>
+<ol class="incremental" type="1">
+<li><span class="math inline">\(n_1p_1 \ge 10\)</span></li>
+<li><span class="math inline">\(n_1(1-p_1) \ge 10\)</span></li>
+<li><span class="math inline">\(n_2p_2 \ge 10\)</span></li>
+<li><span class="math inline">\(n_2(1-p_2) \ge 10\)</span>.</li>
+</ol>
+<h3 id="preconditions-for-confidence-interval">Preconditions for confidence interval</h3>
+<p>For a confidence interval to be valid, the number of successes and failures in each sample should be at least 10.</p>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> <span class="math inline">\(p_1 - p_2 = 0\)</span></p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> <span class="math inline">\(p_1 - p_2 \ne/&gt;/&lt; 0\)</span></p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    z = \frac{\hat{p}_1 - \hat{p}_2}{\sqrt{\hat{p}(1-\hat{p})(1/n_1 + 1/n_2)}} \text{, where }\hat{p}=\frac{X_1 + X_2}{n_1 + n_2}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>Where Z is a standard normal random variable,</p>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : p_1 - p_2 &lt; 0\)</span>: <span class="math inline">\(p = P(Z \le z)\)</span></li>
+<li>For <span class="math inline">\(H_a : p_1 - p_2 &gt; 0\)</span>: <span class="math inline">\(p = P(Z \ge z)\)</span></li>
+<li>For <span class="math inline">\(H_a : p_1 - p_2 \ne 0\)</span>: <span class="math inline">\(p = 2P(Z \le -|z|)\)</span></li>
+</ol>
+<h2 id="p-value-python">p-value (Python)</h2>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : p_1 - p_2 &lt; 0\)</span>: <code>p = stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : p_1 - p_2 &gt; 0\)</span>: <code>p = 1 - stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : p_1 - p_2 \ne 0\)</span>: <code>p = 2 * stats.norm.cdf(-abs(z))</code></li>
+</ol>
+<h2 id="associated-confidence-interval">Associated confidence interval</h2>
+<p><span class="math display">\[
+\text{C% confidence interval} = (\hat{p}_1 - \hat{p}_2) \pm z^\star \sqrt{\frac{\hat{p}_1(1-\hat{p}_1)}{n_1} + \frac{\hat{p}_2(1-\hat{p}_2)}{n_2}}\\
+\text{choose } z^\star \text{ s.t. area on standard normal distribution from }(-z^\star,z^\star)\text{ = C}
+\]</span></p>
+<p>See the <a href="#preconditions-for-confidence-interval">preconditions for the confidence interval</a>.</p>
+<h3 id="minimum-sample-size-to-achieve-margin-of-error">Minimum sample size to achieve margin of error:</h3>
+<p><span class="math display">\[
+    n = (\frac{z^\star}{m^\star})^2 (p_1^\star (1-p_1^\star) + p_2^\star (1-p_2^\star))
+\]</span></p>
+<p><span class="math inline">\(p^\star_1\)</span> is an “educated guess” about the value of <span class="math inline">\(p_1\)</span> (<span class="math inline">\(p^\star_2\)</span> and <span class="math inline">\(p_2\)</span>, respectively). If you have access to a sample proportion, <span class="math inline">\(\hat{p}_1\)</span>, set <span class="math inline">\(p^\star_1=\hat{p}_1\)</span>. Otherwise, a <em>conservative approach</em> is to set <span class="math inline">\(p^\star_1 = p^\star_2 = 0.5\)</span>.</p>
+<h2 id="related-tests">Related tests</h2>
+<p>If you want to perform inference on the proportion of just one population, a <a href="zprop.html">one-sample z-test for proportions</a> is appropriate.</p>
+<p>If you want to perform inference about the proportions of a non-binary categorical variable, a <a href="chi2.html">chi-square test of association</a> is appropriate.</p>
+<h2 id="considerations">Considerations</h2>
+<p>A one-sample z-test for proportions conducted at confidence level <span class="math inline">\(\alpha\)</span> will reject the null hypothesis if and only if the value corresponding to the null hypothesis, <span class="math inline">\(0\)</span>, is completely outside of the <span class="math inline">\(C = 1-\alpha\)</span> confidence interval for the true difference between <span class="math inline">\(p_1\)</span> and <span class="math inline">\(p_2\)</span>.</p>
+<p>Neither the z-test nor the confidence interval use the standard deviation of the difference sample proportion, <span class="math inline">\(\sigma_{\hat{p}_1 - \hat{p}_2}\)</span>.</p>
+<ol class="incremental" type="1">
+<li>The hypothesis test uses the standard error under the null hypothesis, <span class="math inline">\(SE_{\hat{p}_1-\hat{p}_2}^{H_0}\)</span>.</li>
+<li>The confidence interval uses the standard error of the difference in sample proportions, <span class="math inline">\(SE_{\hat{p}_1-\hat{p}_2}\)</span>.</li>
+</ol>
+</body>
+</html>

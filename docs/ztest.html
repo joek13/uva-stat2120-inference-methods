@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>One-sample z-test for means</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">One-sample z-test for means</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We want to estimate the population mean with regard to a single, quantitave variable. We know with certainty the population standard deviation, <span class="math inline">\(\sigma\)</span>. We have a sample of size <span class="math inline">\(n\)</span> and popluation mean <span class="math inline">\(\bar{x}\)</span>.</p>
+<h2 id="preconditions">Preconditions</h2>
+<p>To estimate the population mean using the normal distribution, one of the following conditions must hold:</p>
+<ol class="incremental" type="1">
+<li>The population is normally distributed.</li>
+<li>The sample size, <span class="math inline">\(n\)</span>, is large enough for the Central Limit Theorem to take effect.</li>
+</ol>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> <span class="math inline">\(\mu = \mu_0\)</span></p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> <span class="math inline">\(\mu \ne/&gt;/&lt; \mu_0\)</span></p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>Where Z is a standard normal random variable,</p>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu &lt; \mu_0\)</span>: <span class="math inline">\(p = P(Z \le z)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu &gt; \mu_0\)</span>: <span class="math inline">\(p = P(Z \ge z)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu \ne \mu_0\)</span>: <span class="math inline">\(p = 2P(Z \le -|z|)\)</span></li>
+</ol>
+<h2 id="p-value-python">p-value (Python)</h2>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu &lt; \mu_0\)</span>: <code>p = stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : \mu &gt; \mu_0\)</span>: <code>p = 1 - stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : \mu \ne \mu_0\)</span>: <code>p = 2 * stats.norm.cdf(-abs(z))</code></li>
+</ol>
+<h2 id="associated-confidence-interval">Associated confidence interval</h2>
+<p><span class="math display">\[
+\text{C% confidence interval} = \bar{x} \pm z^\star \frac{\sigma}{\sqrt{n}}\\
+\text{choose } z^\star \text{ s.t. area on standard normal distribution from }(-z^\star,z^\star)\text{ = C}
+\]</span></p>
+<h3 id="minimum-sample-size-to-achieve-margin-of-error">Minimum sample size to achieve margin of error:</h3>
+<p><span class="math display">\[
+    m^\star = z^\star \frac{\sigma}{\sqrt{n}} \iff n = (\frac{z^\star \sigma}{m^\star})^2
+\]</span></p>
+<h2 id="related-tests">Related tests</h2>
+<p>If you lack access to the true value of the population standard deviation, a <a href="ttest.html">one-sample t-test for means</a> is more appropriate.</p>
+<p>If you want to compare means across two diferent independent populations, a <a href="twoztest.html">two-sample z-test for means</a> is more appropriate.</p>
+<h2 id="considerations">Considerations</h2>
+<p>A one-sample z-test conducted at confidence level <span class="math inline">\(\alpha\)</span> will reject the null hypothesis if and only if the value corresponding to the null hypothesis, <span class="math inline">\(\mu_0\)</span>, is completely outside of the <span class="math inline">\(C = 1-\alpha\)</span> confidence interval.</p>
+</body>
+</html>

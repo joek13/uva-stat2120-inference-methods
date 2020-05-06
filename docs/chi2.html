@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Chi-square test of association</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">Chi-square test of association</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We want to analyze the relationship between two categorical variables, exploring if there is an association between the two. These categorical variables can be—but needn’t necessarily be—binary categorical variables.</p>
+<p>We represent the possible values of our categorical variables as a two-way table. If one variable can take on <span class="math inline">\(r\)</span> values, and the other can take on <span class="math inline">\(c\)</span> values, we can represent our data as an <span class="math inline">\(r \times c\)</span> two-way table, where each individual entry counts the number of cases with that particular configuration of values.</p>
+<h2 id="preconditions">Preconditions</h2>
+<p>The approximation to the chi-square distribution is generally valid for a <span class="math inline">\(r \times c\)</span> table if the following preconditions are met:</p>
+<ol class="incremental" type="1">
+<li><span class="math inline">\(\frac{n}{rc} \ge 5\)</span></li>
+<li>Every expected count is at least 1.</li>
+</ol>
+<p>For a <span class="math inline">\(2 \times 2\)</span> table, we only need that every expected count is at least 5.</p>
+<h2 id="hypotheses">Hypotheses</h2>
+<p>The hypotheses for a chi-square test of independence look slightly different than our other methods of inference.</p>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> there is no association between the two variables (i.e., the conditional distributions are identical).</p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> there is an association between the two variables (i.e., the conditional distributions vary).</p>
+<h2 id="test-statistic">Test statistic</h2>
+<p>To compute the test statistic, we first have to compute the expected counts for each cell under <span class="math inline">\(H_0\)</span>. <span class="math display">\[
+    \text{expected count} = \frac{\text{row total } \times \text{ column total}}{n}
+\]</span></p>
+<p>Next, we compute the test statistic by comparing the expected counts to their actual counts. <span class="math display">\[
+    X^2 = \sum{\frac{(\text{observed count } - \text{ expected count})^2}{\text{expected count}}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>If <span class="math inline">\(H_0\)</span> is true, the <span class="math inline">\(X^2\)</span> test statistic approximately follows the <span class="math inline">\(\chi^2(k)\)</span> distribution with degrees of freedom <span class="math inline">\(k=(r-1)(c-1)\)</span>.</p>
+<p>We compute our p value as follows: <span class="math display">\[
+     p = P(\chi^2(k) \ge X^2) \text{ with } k = (r-1)(c-1)
+\]</span></p>
+<h2 id="p-value-python">p-value (Python)</h2>
+<pre><code>p = stats.chi2.cdf(x2, (r-1) * (c-1))</code></pre>
+<h2 id="related-tests">Related tests</h2>
+<p>If you want to test for association between two binary variables, a <a href="twozprop.html">two-sample z-test for proportions</a> might be simpler.</p>
+<h2 id="considerations">Considerations</h2>
+<p>Performing a chi-square test of association on a <span class="math inline">\(2 \times 2\)</span> two-way table will always yield the same result as a two-sided <a href="twozprop.html">two-sample z-test for proportions</a>. They willl produce the same p-value.</p>
+</body>
+</html>

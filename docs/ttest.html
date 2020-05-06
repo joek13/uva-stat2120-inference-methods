@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>One-sample t-test for means</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">One-sample t-test for means</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We want to estimate the population mean with regard to a single, quantitave variable. We have a sample of size <span class="math inline">\(n\)</span> and popluation mean <span class="math inline">\(\bar{x}\)</span>. We don’t know with certainty the population standard deviation, <span class="math inline">\(\sigma\)</span>, so we estimate it using the sample standard deviation, <span class="math inline">\(s\)</span>.</p>
+<h2 id="preconditions">Preconditions</h2>
+<p>For this test to be reliable, one of the following conditions must hold:</p>
+<ol class="incremental" type="1">
+<li>The population is normally distributed.</li>
+<li>The population is <strong>roughly</strong> normal, and our sample size is large.</li>
+</ol>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> <span class="math inline">\(\mu = \mu_0\)</span></p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> <span class="math inline">\(\mu \ne/&gt;/&lt; \mu_0\)</span></p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    t = \frac{\bar{x} - \mu_0}{\frac{s}{\sqrt{n}}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>Where <span class="math inline">\(T\)</span> is a random variable distributed according to the <span class="math inline">\(t(k)\)</span> distribution with degrees of freedom <span class="math inline">\(k = n-1\)</span>,</p>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu &lt; \mu_0\)</span>: <span class="math inline">\(p = P(T \le t)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu &gt; \mu_0\)</span>: <span class="math inline">\(p = P(T \ge t)\)</span></li>
+<li>For <span class="math inline">\(H_a : \mu \ne \mu_0\)</span>: <span class="math inline">\(p = 2P(T \le -|t|)\)</span></li>
+</ol>
+<p>Because the <span class="math inline">\(t(k)\)</span> distribution is slightly wider than the normal distribution, a p-value obtained using this method will be slightly larger than the p-value generated from a z-test.</p>
+<h2 id="p-value-python">p-value (Python)</h2>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : \mu &lt; \mu_0\)</span>: <code>p = stats.t.cdf(t, df=n-1)</code></li>
+<li>For <span class="math inline">\(H_a : \mu &gt; \mu_0\)</span>: <code>p = 1 - stats.t.cdf(t, df=n-1)</code></li>
+<li>For <span class="math inline">\(H_a : \mu \ne \mu_0\)</span>: <code>p = 2 * stats.t.cdf(-abs(t), df=n-1)</code></li>
+</ol>
+<h2 id="associated-confidence-interval">Associated confidence interval</h2>
+<p><span class="math display">\[
+\text{C% confidence interval} = \bar{x} \pm t^\star \frac{s}{\sqrt{n}}\\
+\text{choose } t^\star \text{ s.t. area on }t(n-1)\text{ distribution from }(-t^\star,t^\star)\text{ = C}
+\]</span></p>
+<p>Because our p-values are slightly larger than those from a z-test, our t-confidence interval will be slightly larger than a z-confidence interavl.</p>
+<h3 id="minimum-sample-size-to-achieve-margin-of-error">Minimum sample size to achieve margin of error:</h3>
+<p><span class="math display">\[
+    m^\star = t^\star \frac{s}{\sqrt{n}} \iff n = (\frac{t^\star s}{m^\star})^2
+\]</span></p>
+<h2 id="related-tests">Related tests</h2>
+<p>If you have access to the true value of the population standard deviation, a <a href="ztest.html">one-sample z-test for means</a> is more appropriate.</p>
+<p>If you want to compare means across two diferent independent populations, a <a href="twottest.html">two-sample t-test for means</a> is more appropriate.</p>
+<h2 id="considerations">Considerations</h2>
+<p>A one-sample t-test conducted at confidence level <span class="math inline">\(\alpha\)</span> will reject the null hypothesis if and only if the value corresponding to the null hypothesis, <span class="math inline">\(\mu_0\)</span>, is completely outside of the <span class="math inline">\(C = 1-\alpha\)</span> t-confidence interval.</p>
+<p>The p-value provided from a one-sample t-test will always be <em>slightly</em> larger than a corresponding z-test. This larger p-value reflects the increased uncertainty introduced by estimating the population standard deviation using <span class="math inline">\(s\)</span>.</p>
+<h3 id="conducting-a-matched-pairs-t-test">Conducting a matched pairs t-test</h3>
+<p>A matched pairs t-test is conducted where the variable of interest is actually the difference between two variables for a given pair. After computing this quantity for each case, proceed with a one-sample t-test for means on this single difference variable.</p>
+</body>
+</html>

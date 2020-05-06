@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>One-sample z-test for proportions</title>
+  <style type="text/css">
+      code{white-space: pre-wrap;}
+      span.smallcaps{font-variant: small-caps;}
+      span.underline{text-decoration: underline;}
+      div.column{display: inline-block; vertical-align: top; width: 50%;}
+  </style>
+  <link rel="stylesheet" href="../static/style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-AMS_CHTML-full" type="text/javascript"></script>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header>
+<h1 class="title">One-sample z-test for proportions</h1>
+</header>
+<h2 id="use-case">Use case</h2>
+<p>We have a single binary categorical variable. We want to perform inference on the true proportion of the population, <span class="math inline">\(p\)</span>, that fall into one value (e.g. “yes” on a survey). We cannot know this value with certainty, so we estimate by drawing a sample of size <span class="math inline">\(n\)</span>. We record <span class="math inline">\(X\)</span> successes from our sample. Let <span class="math inline">\(\hat{p}=\frac{X}{n}\)</span>, our sample proportion. <span class="math inline">\(\hat{p}\)</span> is an <em>unbiased estimator</em> of <span class="math inline">\(p\)</span>.</p>
+<h2 id="preconditions">Preconditions</h2>
+<h3 id="preconditions-for-hypothesis-testing">Preconditions for hypothesis testing</h3>
+<p>This technique relies upon the normal approximation to the binomial distribution. For this to hold, the following conditions must hold:</p>
+<ol class="incremental" type="1">
+<li><span class="math inline">\(np_0 \ge 10\)</span></li>
+<li><span class="math inline">\(n(1-p_0) \ge 10\)</span></li>
+</ol>
+<p>Where <span class="math inline">\(p_0\)</span> is our supposed value of <span class="math inline">\(p\)</span> under the null hypothesis.</p>
+<h3 id="preconditions-for-confidence-interval">Preconditions for confidence interval</h3>
+<p>If we are constructing a confidence interval for <span class="math inline">\(p\)</span>, the preconditions are slightly different. Here, the normal approximation to the binomial distribution still needs to hold, but it applies to our sample proportion, <span class="math inline">\(\hat{p}\)</span> rather than <span class="math inline">\(p_0\)</span>. The following conditions must hold:</p>
+<ol class="incremental" type="1">
+<li><span class="math inline">\(n \hat{p} \ge 10\)</span></li>
+<li><span class="math inline">\(n(1-\hat{p}) \ge 10\)</span></li>
+</ol>
+<p>Note that this is equivalent to having at least 10 observations corresponding to either value (e.g., at least 10 “yes” and at least 10 “no”).</p>
+<h2 id="hypotheses">Hypotheses</h2>
+<p><strong>Null hypothesis, <span class="math inline">\(H_0\)</span>:</strong> <span class="math inline">\(p = p_0\)</span></p>
+<p><strong>Alternative hypothesis, <span class="math inline">\(H_a\)</span>:</strong> <span class="math inline">\(p \ne/&gt;/&lt; p_0\)</span></p>
+<h2 id="test-statistic">Test statistic</h2>
+<p><span class="math display">\[
+    z = \frac{\hat{p} - p_0}{\sqrt{\frac{p_0(1-p_0)}{n}}}
+\]</span></p>
+<h2 id="p-value">p-value</h2>
+<p>Where Z is a standard normal random variable,</p>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : p &lt; p_0\)</span>: <span class="math inline">\(p = P(Z \le z)\)</span></li>
+<li>For <span class="math inline">\(H_a : p &gt; p_0\)</span>: <span class="math inline">\(p = P(Z \ge z)\)</span></li>
+<li>For <span class="math inline">\(H_a : p \ne p_0\)</span>: <span class="math inline">\(p = 2P(Z \le -|z|)\)</span></li>
+</ol>
+<h2 id="p-value-python">p-value (Python)</h2>
+<ol class="incremental" type="1">
+<li>For <span class="math inline">\(H_a : p &lt; p_0\)</span>: <code>p = stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : p &gt; p_0\)</span>: <code>p = 1 - stats.norm.cdf(z)</code></li>
+<li>For <span class="math inline">\(H_a : p \ne p_0\)</span>: <code>p = 2 * stats.norm.cdf(-abs(z))</code></li>
+</ol>
+<h2 id="associated-confidence-interval">Associated confidence interval</h2>
+<p><span class="math display">\[
+\text{C% confidence interval} = \hat{p} \pm z^\star \sqrt{\frac{\hat{p}(1-\hat{p})}{n}}\\
+\text{choose } z^\star \text{ s.t. area on standard normal distribution from }(-z^\star,z^\star)\text{ = C}
+\]</span></p>
+<p>See the <a href="#preconditions-for-confidence-interval">preconditions for the confidence interval</a>.</p>
+<h3 id="minimum-sample-size-to-achieve-margin-of-error">Minimum sample size to achieve margin of error:</h3>
+<p><span class="math display">\[
+    n = (\frac{z^\star}{m^\star})^2 p^\star (1-p^\star)
+\]</span></p>
+<p><span class="math inline">\(p^\star\)</span> is an “educated guess” about the value of <span class="math inline">\(p\)</span>. If you have access to a sample proportion, <span class="math inline">\(\hat{p}\)</span>, set <span class="math inline">\(p^\star=\hat{p}\)</span>. Otherwise, a <em>conservative approach</em> is to set <span class="math inline">\(p^\star = 0.5\)</span>.</p>
+<h2 id="related-tests">Related tests</h2>
+<p>If you want to compare proportions across two independent populations, a <a href="twozprop.html">two-sample z-test for proportions</a> is appropriate.</p>
+<h2 id="considerations">Considerations</h2>
+<p>A one-sample z-test for proportions conducted at confidence level <span class="math inline">\(\alpha\)</span> will reject the null hypothesis if and only if the value corresponding to the null hypothesis, <span class="math inline">\(p_0\)</span>, is completely outside of the <span class="math inline">\(C = 1-\alpha\)</span> confidence interval for the true proportion.</p>
+<p>Neither the z-test nor the confidence interval use the standard deviation of the sample proportion, <span class="math inline">\(\sigma_{\hat{p}}\)</span>.</p>
+<ol class="incremental" type="1">
+<li>The hypothesis test uses the standard deviation of the sample proportion under the null hypothesis, <span class="math inline">\(\sigma^{H_0}_{\hat{p}}\)</span>.</li>
+<li>The confidence interval uses the standard error of the sample proportion, <span class="math inline">\(SE_{\hat{p}}\)</span>.</li>
+</ol>
+</body>
+</html>
